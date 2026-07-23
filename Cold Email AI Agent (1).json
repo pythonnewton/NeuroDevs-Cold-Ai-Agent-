@@ -1,0 +1,399 @@
+{
+  "name": "Cold Email AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1xyETb4sp7WqvepZha5Z4eRYTJqF8Jm6edZVhd3sgTZ4",
+          "mode": "list",
+          "cachedResultName": "Lead List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xyETb4sp7WqvepZha5Z4eRYTJqF8Jm6edZVhd3sgTZ4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xyETb4sp7WqvepZha5Z4eRYTJqF8Jm6edZVhd3sgTZ4/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "d9cd5d32-a129-49ad-8519-9bac3c3d9156",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q2StMNAeifEGbL0X",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Name:  {{ $json['Lead Name'] }}\nCompany: {{ $json.Company }}\nWebsite: {{ $json.Website }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert cold email writer with 5 years of experience.\n\nYour job is to generate short, personalized cold emails that introduce Neurodevs' AI and automation solutions to businesses.\n\n**Neurodevs Services:**\n\n* AI Agents & Business Automation\n* Custom AI Chatbots\n* AI Voice Agents\n* Workflow Automation\n* CRM & ERP Automation\n* Website Design & Development\n* WordPress Development\n* Shopify Development\n* Custom Web Applications\n* Mobile App Development (Android & iOS)\n* UI/UX Design & Branding\n* Search Engine Optimization (SEO)\n* Local SEO & Google Business Profile Optimization\n* AI Search Optimization (ChatGPT, Gemini, Claude & LLM SEO)\n* Google, Facebook & TikTok Ads\n* Social Media Marketing\n* API Integrations\n* E-commerce Solutions\n* Maintenance & Technical Support\n\n**Instructions:**\n\n* Keep the tone friendly, human-written, simple, and clear.\n* Always personalize the email using the details provided in the user prompt.\n* Avoid generic opening lines.\n* Write the cold email in **4–5 lines maximum**.\n* Focus on how AI agents and automation can help improve efficiency, reduce manual work, increase sales, and streamline operations.\n* Naturally mention the most relevant Neurodevs services based on the recipient's business.\n* Do not use placeholders or brackets.\n* Produce **only the final email body** with no introduction or explanation.\n* End every email with this signature:\n\nBest,\nArslan \nEmail : info@neurodevs.co\nLinkedin : www.linkedin.com/in/muhammad-arslan-yaqoob-223204217\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        656,
+        16
+      ],
+      "id": "530d5892-1ce1-421e-84c9-074f83bbaf0f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        592,
+        256
+      ],
+      "id": "ca5bd599-57fc-4d6a-9fa0-cd4d2e456df9",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YJ0ia96MsB5TQYjh",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"subject\": \"subject\",\n\t\"body\": \"body\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        880,
+        256
+      ],
+      "id": "4ef248c1-df7c-4f4b-9086-819eecae4e50",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json.Email }}",
+        "subject": "={{ $json.output.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.output.body }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Your_name"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        16
+      ],
+      "id": "2bdc6f25-2afc-4ee3-8ed8-c088cf742c2c",
+      "name": "Send a message",
+      "webhookId": "b289c85b-4f1e-4326-80a1-f4b7c16037a9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "dIlk8Ho3ywhLYLsz",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1xyETb4sp7WqvepZha5Z4eRYTJqF8Jm6edZVhd3sgTZ4",
+          "mode": "list",
+          "cachedResultName": "Lead List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xyETb4sp7WqvepZha5Z4eRYTJqF8Jm6edZVhd3sgTZ4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xyETb4sp7WqvepZha5Z4eRYTJqF8Jm6edZVhd3sgTZ4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get row(s) in sheet').item.json.row_number }}",
+            "Status": "Sent"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Name ",
+              "displayName": "Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Compnay",
+              "displayName": "Compnay",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website ",
+              "displayName": "Website ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1184,
+        16
+      ],
+      "id": "14245e31-8d9e-499e-9fab-852d011de5a2",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q2StMNAeifEGbL0X",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d23e4570-b733-4158-8d1c-56a8c2aa1de2",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "fd05345c-9a0e-48ea-8061-550bbe4638a0",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1392,
+        16
+      ],
+      "id": "93d490c5-3b96-469a-8b5c-1f9695d40170",
+      "name": "Wait",
+      "webhookId": "f3df2f37-8bef-4bb4-9a4b-1fc8cc3ffd1d"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "adffc8d1-a15f-4b72-a608-3bfd7d86a771",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e21d1ce337122887f812d816c2796c8f85dbdbc0440ad53a58dfe9646d7528c"
+  },
+  "nodeGroups": [],
+  "id": "MFMd98cz1nCvQBUo",
+  "tags": []
+}
